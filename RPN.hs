@@ -1,53 +1,66 @@
-import Data.Either
+import Data.Maybe
 
-isLeft :: Either a b -> Bool
-isLeft (Left a) = True
-isLeft _        = False
+type Stack a = [a]
 
-printStack :: Either String [Double] -> IO ()
-printStack (Right x) = putStrLn $ "Stack = " ++ (show x)
-printStack (Left x)  = putStrLn $ x
+push :: a -> Stack a -> Stack a
+push a = (:) a
 
-printLastValue :: Either String [Double] -> IO ()
-printLastValue (Left x)  = putStrLn x
-printLastValue (Right x) = putStrLn . show . head $ x
+pop :: Stack a -> (a,Stack a)
+pop [] = error "Empty Stack"
+pop [x] = (x,[])
+pop (x:xs) = (x,xs)
 
-printLastError :: Either String [Double] -> IO ()
-printLastError e@(Left x) = printLastValue e
-printLastError _ = return ()
+getOp :: (Fractional a) => String -> Maybe (a -> a -> a)
+getOp "+" = Just (+)
+getOp "-" = Just (-)
+getOp "/" = Just (/)
+getOp "*" = Just (*)
+getOp _   = Nothing
+
+applyOp :: (Fractional a) => (a -> a -> a) -> a -> a -> a
+applyOp f a b = f a b
+
+isNumeric :: String -> Bool
+isNumeric s = case reads s :: [(Double, String)] of
+  [(_, "")] -> True
+  _         -> False
+
+isOperator :: String -> Bool
+isOperator s = isJust (getOp s)
+
+pushValOrCompute :: String -> Stack Double -> Stack Double
+pushValOrCompute str s 
+  | isNumeric str  = push (read str) s
+  | isOperator str && length s >= 2 = push 
+      (applyOp 
+        (fromJust . getOp $ str) 
+        (fst . pop $ s) 
+        (fst . pop . snd . pop $ s)) 
+      (snd . pop . snd. pop $ s)
+  | otherwise = s
 
 
-push :: String -> Either String [Double] -> Either String [Double]
-push a (Right [])   = Right $ [(read a)]
-push a (Right [x])  = Right $ (read a):[x]
-push "/" (Right (0:xs)) = Left "Error: divide by zero"
-push a (Right lst@(x:y:xs)) = case a of
-  "+"   -> Right $ ((+) y x):xs
-  "-"   -> Right $ ((-) y x):xs
-  "/"   -> Right $ ((/) y x):xs
-  "*"   -> Right $ ((*) y x):xs
-  "sum" -> Right $ [(sum lst)]
-  _     -> Right $ (read a):lst
+--
 
-pop :: Either String [Double] -> Either String [Double]
-pop (Right (x:xs)) = Right xs
-
-
-mainLoop :: Either String [Double] -> IO()
+mainLoop :: Stack Double -> IO ()
 mainLoop stack = do
-  entry <- getLine
-  st <- case entry of
-          "P" -> do printLastValue stack
-                    return stack
-          "p" -> do printLastValue stack
-                    return . pop $ stack
-          "f" -> do printStack stack
-                    return stack
-          _   -> return $ push entry stack
+  str <- getLine
+  mainLoop $ pushValOrCompute str stack
 
-  
-  printLastError st
-  mainLoop (if isLeft st then stack else st)
 
-main = do
-  mainLoop $ Right []
+--  str <- getLine
+--  --return ()
+--  mainLoop $ if isNumeric str
+--    then push (read str) stack
+--    else if (length stack) < 2
+--      then do
+--        putStrLn "Less than 2 numbers in stack"
+--        return stack
+--      else do
+--        a <- fst . pop $ stack
+--        b <- fst . pop . snd . pop $ stack
+--        newStack <- snd . pop . snd . pop $ stack
+--        return (push ((getOp str) a b) newStack)
+--      
+--    --then push (read str) stack
+--    --else push (applyOp (getOp str) (fst . pop $ stack) (fst . pop $ stack)) stack
