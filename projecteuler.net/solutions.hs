@@ -73,3 +73,11 @@ problem9 = product . head . pythagorean_triplets $ 1000
 problem10 = sum $ takeWhile (<=2000000) primes
 
 
+-- problem 16
+problem16 = sum . map (digitToInt) $ show (2^1000)
+
+--problem 20
+problem20 = sum . map (digitToInt) $ show (factorial' 100)
+  where factorial' n
+          | n == 1    = 1
+          | otherwise = n * factorial' (n-1)
