@@ -72,6 +72,19 @@ problem9 = product . head . pythagorean_triplets $ 1000
 -- problem 10
 problem10 = sum $ takeWhile (<=2000000) primes
 
+-- problem 12
+problem12 = triangle_numbers !! (length $ takeWhile (<=500) tr_num_divisors) 
+  where tr_num_divisors  = map (numDivisors) triangle_numbers
+        triangle_numbers = map (\x -> sum $ take x [1..]) [1..]
+        numDivisors n    = product [ toInteger (a+1) | 
+                             (p,a) <- gatherPrimeFactors . primeFactors $ n ]
+        gatherPrimeFactors lst = nub $ [ (a,n) | a <- lst, n <- [length $ filter (==a) lst] ]
+-- divisors n = [ x | x <- [1..n], n `mod` x == 0 ]
+
+-- problem 13
+problem13 = do f <- readFile "5000digits.txt"
+               let lst = (map read (lines $ f)) :: [Integer]
+               print . take 10 . show . sum $ lst
 
 -- problem 16
 problem16 = sum . map (digitToInt) $ show (2^1000)
