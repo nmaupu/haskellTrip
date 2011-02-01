@@ -1,5 +1,6 @@
 import Data.List
 import Data.Char
+import Data.Ord (comparing)
 
 -- problem 1
 problem1' :: [Int] -> Int -> Int
@@ -85,6 +86,15 @@ problem12 = triangle_numbers !! (length $ takeWhile (<=500) tr_num_divisors)
 problem13 = do f <- readFile "5000digits.txt"
                let lst = (map read (lines $ f)) :: [Integer]
                print . take 10 . show . sum $ lst
+
+-- problem 14
+problem14' []          = []
+problem14' lst@(1:xs)  = lst
+problem14' lst@(x:xs)  = reverse . problem14' $ n:lst
+  where n | even x    = x `div` 2
+          | otherwise = x*3 + 1
+
+problem14 = fst $ maximumBy (comparing snd) $ map (\x -> (x,length . problem14' $ [x])) [1..999999]
 
 -- problem 16
 problem16 = sum . map (digitToInt) $ show (2^1000)
