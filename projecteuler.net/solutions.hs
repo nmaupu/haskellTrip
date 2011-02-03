@@ -99,6 +99,23 @@ problem14 = fst $ maximumBy (comparing snd) $ map (\x -> (x,length . problem14' 
 -- problem 16
 problem16 = sum . map (digitToInt) $ show (2^1000)
 
+-- problem 17
+problem17 = sum $ map (length . get_in_letters) [1..1000]
+
+one_to_nineteen = ["", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten",
+                   "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen",
+                   "eighteen", "nineteen"]
+ty_suffix       = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eigthy", "ninety"]
+
+get_in_letters :: Int -> [Char]
+get_in_letters n
+  | n < 20             = one_to_nineteen !! n
+  | n >= 20 && n < 100 = ty_suffix !! (n `div` 10) ++ one_to_nineteen !! (n `mod` 10)
+  | n >= 100 && n < 1000 && n `mod` 100 /= 0 = gethundred n ++ "and" ++ get_in_letters (n `mod` 100)
+  | n /= 1000 && n `mod` 100 == 0 = gethundred n
+  | n == 1000 = "onethousand"
+  where gethundred n' = one_to_nineteen !! (n' `div` 100) ++ "hundred"
+
 --problem 20
 problem20 = sum . map (digitToInt) $ show (factorial' 100)
   where factorial' n
