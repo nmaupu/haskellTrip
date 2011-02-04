@@ -1,6 +1,8 @@
 import Data.List
 import Data.Char
 import Data.Ord (comparing)
+import Data.Maybe
+import Data.Array 
 
 -- problem 1
 problem1' :: [Int] -> Int -> Int
@@ -124,5 +126,23 @@ problem20 = sum . map (digitToInt) $ show (factorial' 100)
 -- problem 21
 problem21 = sum $ [ a | a <- [1..10000], let b = d a, b > 1, b < 10000, d b == a, a /= b ]
   where d n = sum $ divisors n
-        divisors n = [ r | r <- [1..(n `div` 2)], n `mod` r == 0]
+divisors n = [ r | r <- [1..(n `div` 2)], n `mod` r == 0]
 
+-- problem 22
+problem22 = do file <- readFile "names.txt"
+               let names = sort $ read $ "[" ++ file ++ "]" :: [String]
+               let score = sum $ zipWith computeScore [1..] names
+               print $ score
+               where computeScore n lst = (*) n . sum . map alphaAscii $ lst
+                     alphaAscii x = ord x - ord 'A' + 1
+
+-- problem 25
+problem25 = length $ takeWhile (<limit) fibs
+            where limit = 10^999
+
+-- problem 48
+problem48 :: Integer
+problem48 = read . concat . filter last_ten . tails . show . sum . take n $ series
+  where n = 1000
+        last_ten x = length x == 10
+        series = zipWith (^) [1..] [1..] 
