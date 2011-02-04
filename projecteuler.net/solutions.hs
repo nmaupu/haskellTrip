@@ -80,7 +80,6 @@ problem12 = triangle_numbers !! (length $ takeWhile (<=500) tr_num_divisors)
         numDivisors n    = product [ toInteger (a+1) | 
                              (p,a) <- gatherPrimeFactors . primeFactors $ n ]
         gatherPrimeFactors lst = nub $ [ (a,n) | a <- lst, n <- [length $ filter (==a) lst] ]
--- divisors n = [ x | x <- [1..n], n `mod` x == 0 ]
 
 -- problem 13
 problem13 = do f <- readFile "5000digits.txt"
@@ -121,3 +120,9 @@ problem20 = sum . map (digitToInt) $ show (factorial' 100)
   where factorial' n
           | n == 1    = 1
           | otherwise = n * factorial' (n-1)
+
+-- problem 21
+problem21 = sum $ [ a | a <- [1..10000], let b = d a, b > 1, b < 10000, d b == a, a /= b ]
+  where d n = sum $ divisors n
+        divisors n = [ r | r <- [1..(n `div` 2)], n `mod` r == 0]
+
