@@ -1,5 +1,8 @@
 import Data.List
 import Data.Char
+import Data.Ord (comparing)
+import Data.Maybe
+import Data.Array 
 
 -- problem 1
 problem1' :: [Int] -> Int -> Int
@@ -79,18 +82,67 @@ problem12 = triangle_numbers !! (length $ takeWhile (<=500) tr_num_divisors)
         numDivisors n    = product [ toInteger (a+1) | 
                              (p,a) <- gatherPrimeFactors . primeFactors $ n ]
         gatherPrimeFactors lst = nub $ [ (a,n) | a <- lst, n <- [length $ filter (==a) lst] ]
--- divisors n = [ x | x <- [1..n], n `mod` x == 0 ]
 
 -- problem 13
 problem13 = do f <- readFile "5000digits.txt"
                let lst = (map read (lines $ f)) :: [Integer]
                print . take 10 . show . sum $ lst
 
+-- problem 14
+problem14' []          = []
+problem14' lst@(1:xs)  = lst
+problem14' lst@(x:xs)  = reverse . problem14' $ n:lst
+  where n | even x    = x `div` 2
+          | otherwise = x*3 + 1
+
+problem14 = fst $ maximumBy (comparing snd) $ map (\x -> (x,length . problem14' $ [x])) [1..999999]
+
 -- problem 16
 problem16 = sum . map (digitToInt) $ show (2^1000)
+
+-- problem 17
+problem17 = sum $ map (length . get_in_letters) [1..1000]
+
+one_to_nineteen = ["", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten",
+                   "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen",
+                   "eighteen", "nineteen"]
+ty_suffix       = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eigthy", "ninety"]
+
+get_in_letters :: Int -> [Char]
+get_in_letters n
+  | n < 20             = one_to_nineteen !! n
+  | n >= 20 && n < 100 = ty_suffix !! (n `div` 10) ++ one_to_nineteen !! (n `mod` 10)
+  | n >= 100 && n < 1000 && n `mod` 100 /= 0 = gethundred n ++ "and" ++ get_in_letters (n `mod` 100)
+  | n /= 1000 && n `mod` 100 == 0 = gethundred n
+  | n == 1000 = "onethousand"
+  where gethundred n' = one_to_nineteen !! (n' `div` 100) ++ "hundred"
 
 --problem 20
 problem20 = sum . map (digitToInt) $ show (factorial' 100)
   where factorial' n
           | n == 1    = 1
           | otherwise = n * factorial' (n-1)
+
+-- problem 21
+problem21 = sum $ [ a | a <- [1..10000], let b = d a, b > 1, b < 10000, d b == a, a /= b ]
+  where d n = sum $ divisors n
+divisors n = [ r | r <- [1..(n `div` 2)], n `mod` r == 0]
+
+-- problem 22
+problem22 = do file <- readFile "names.txt"
+               let names = sort $ read $ "[" ++ file ++ "]" :: [String]
+               let score = sum $ zipWith computeScore [1..] names
+               print $ score
+               where computeScore n lst = (*) n . sum . map alphaAscii $ lst
+                     alphaAscii x = ord x - ord 'A' + 1
+
+-- problem 25
+problem25 = length $ takeWhile (<limit) fibs
+            where limit = 10^999
+
+-- problem 48
+problem48 :: Integer
+problem48 = read . concat . filter last_ten . tails . show . sum . take n $ series
+  where n = 1000
+        last_ten x = length x == 10
+        series = zipWith (^) [1..] [1..] 
