@@ -65,15 +65,37 @@ main_problem8 = do f <- readFile "1000digits.txt"
 problem8 = main_problem8
 
 -- problem 9
-pythagorean_triplets tot = [ [a,b,c] | a <- [1..999],
-                                       b <- [1..999],
-                                       let c = floor . sqrt . fromIntegral $ (a^2 + b^2),
-                                       a + b + c == tot,
-                                       a^2 + b^2 == c^2 ]
+-- http://en.wikipedia.org/wiki/Pythagorean_triple#Generating_a_triple
+-- I'am not currently sure about the generation of k
+pythagorean_triplets tot = nub . sort $
+                             [ sort $ [a,b,c] | 
+                                m <- [1..lim],
+                                n <- [1..(m-1)],
+                                k <- [1..lim],
+                                let a   = k * (m^2 - n^2),
+                                let b   = k * (2 * m * n),
+                                let c   = k * (m^2 + n^2),
+                                a + b + c == tot ]
+  where lim = floor . sqrt . fromIntegral $ tot
 problem9 = product . head . pythagorean_triplets $ 1000
 
 -- problem 10
 problem10 = sum $ takeWhile (<=2000000) primes
+
+-- problem 11 - still wrong ...
+problem11 = do file <- readFile "problem11.txt"
+               let content = map (map read) $ (map words $ lines file) :: [[Integer]]
+               let maxH    = maximum $ map (maximum . product4) $ content
+               let maxV    = maximum $ map (maximum . product4) $ transpose content
+               let maxD    = maximum $ map (maximum . product4) $ transpose . transpose' $ content
+               print $ maximum [maxH, maxV, maxD]
+product4 []         = []
+product4 lst        | length lst < 4 = []
+                    | otherwise      = (product $ take 4 lst) : (product4 $ tail lst)
+transpose' lst      = transpose'' ((length $ head lst) - 1) 0 lst
+transpose'' _ _  [] = []
+transpose'' b a lst = fill' b a (head lst) : transpose''(b-1) (a+1) (tail lst)
+fill' nbB nbA lst   = (take nbB $ repeat 0) ++ lst ++ (take nbA $ repeat 0)
 
 -- problem 12
 problem12 = triangle_numbers !! (length $ takeWhile (<=500) tr_num_divisors) 
@@ -117,7 +139,11 @@ get_in_letters n
   | n == 1000 = "onethousand"
   where gethundred n' = one_to_nineteen !! (n' `div` 100) ++ "hundred"
 
---problem 20
+-- problem 18
+-- problem18 = readFile "triangle-p18.txt" >>= print . parse
+-- parse = map (map read . words) . lines
+
+-- problem 20
 problem20 = sum . map (digitToInt) $ show (factorial' 100)
   where factorial' n
           | n == 1    = 1
@@ -140,9 +166,20 @@ problem22 = do file <- readFile "names.txt"
 problem25 = length $ takeWhile (<limit) fibs
             where limit = 10^999
 
+-- problem 39
+problem39 = fromJust (elemIndex (maximum lst) lst) + 1
+  where lst            = map getNbSolutions $ [1..1000]
+        getNbSolutions = length . pythagorean_triplets
+
+-- problem 40
+problem40 = product . map irrational_decimal $ exp
+  where irrational_decimal n = digitToInt $ (concat . map show $ [1..]) !! (n-1)
+        exp                  = take 7 . map (\x -> 10^x) $ [0..]
+
 -- problem 48
 problem48 :: Integer
 problem48 = read . concat . filter last_ten . tails . show . sum . take n $ series
   where n = 1000
         last_ten x = length x == 10
         series = zipWith (^) [1..] [1..] 
+
