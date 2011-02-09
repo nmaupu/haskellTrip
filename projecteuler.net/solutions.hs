@@ -82,20 +82,23 @@ problem9 = product . head . pythagorean_triplets $ 1000
 -- problem 10
 problem10 = sum $ takeWhile (<=2000000) primes
 
--- problem 11 - still wrong ...
-problem11 = do file <- readFile "problem11.txt"
-               let content = map (map read) $ (map words $ lines file) :: [[Integer]]
-               let maxH    = maximum $ map (maximum . product4) $ content
-               let maxV    = maximum $ map (maximum . product4) $ transpose content
-               let maxD    = maximum $ map (maximum . product4) $ transpose . transpose' $ content
-               print $ maximum [maxH, maxV, maxD]
-product4 []         = []
-product4 lst        | length lst < 4 = []
-                    | otherwise      = (product $ take 4 lst) : (product4 $ tail lst)
-transpose' lst      = transpose'' ((length $ head lst) - 1) 0 lst
-transpose'' _ _  [] = []
-transpose'' b a lst = fill' b a (head lst) : transpose''(b-1) (a+1) (tail lst)
-fill' nbB nbA lst   = (take nbB $ repeat 0) ++ lst ++ (take nbA $ repeat 0)
+-- problem 11
+problem11 =
+  do file <- readFile "problem11.txt"
+     let content = map (map read) $ (map words $ lines file) :: [[Integer]]
+     let maxH    = maximum $ map (maximum . product4) $ content
+     let maxV    = maximum $ map (maximum . product4) $ transpose content
+     let maxD    = maximum $ map (maximum . product4) $ transpose . transpose'    $ content
+     let maxD2   = maximum $ map (maximum . product4) $ transpose . transposeInv' $ content
+     print $ maximum [maxH, maxV, maxD, maxD2]
+where product4 []             = []
+      product4 lst            | length lst < 4 = []
+                              | otherwise      = (product $ take 4 lst) : (product4 $ tail lst)
+      transpose'    lst       = transpose'' ((length $ head lst) - 1) 0 lst  1
+      transposeInv' lst       = transpose'' 0 ((length $ head lst) - 1) lst (-1)
+      transpose'' _ _ [] _    = []
+      transpose'' b a lst dir = fill' b a (head lst) : transpose'' (b-(1*dir)) (a+(1*dir)) (tail lst) dir
+      fill' nbB nbA lst       = (take nbB $ repeat 0) ++ lst ++ (take nbA $ repeat 0)
 
 -- problem 12
 problem12 = triangle_numbers !! (length $ takeWhile (<=500) tr_num_divisors) 
