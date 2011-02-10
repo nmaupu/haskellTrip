@@ -91,14 +91,14 @@ problem11 =
      let maxD    = maximum $ map (maximum . product4) $ transpose . transpose'    $ content
      let maxD2   = maximum $ map (maximum . product4) $ transpose . transposeInv' $ content
      print $ maximum [maxH, maxV, maxD, maxD2]
-where product4 []             = []
-      product4 lst            | length lst < 4 = []
-                              | otherwise      = (product $ take 4 lst) : (product4 $ tail lst)
-      transpose'    lst       = transpose'' ((length $ head lst) - 1) 0 lst  1
-      transposeInv' lst       = transpose'' 0 ((length $ head lst) - 1) lst (-1)
-      transpose'' _ _ [] _    = []
-      transpose'' b a lst dir = fill' b a (head lst) : transpose'' (b-(1*dir)) (a+(1*dir)) (tail lst) dir
-      fill' nbB nbA lst       = (take nbB $ repeat 0) ++ lst ++ (take nbA $ repeat 0)
+  where product4 []             = []
+        product4 lst            | length lst < 4 = []
+                                | otherwise      = (product $ take 4 lst) : (product4 $ tail lst)
+        transpose'    lst       = transpose'' ((length $ head lst) - 1) 0 lst  1
+        transposeInv' lst       = transpose'' 0 ((length $ head lst) - 1) lst (-1)
+        transpose'' _ _ [] _    = []
+        transpose'' b a lst dir = fill' b a (head lst) : transpose'' (b-(1*dir)) (a+(1*dir)) (tail lst) dir
+        fill' nbB nbA lst       = (take nbB $ repeat 0) ++ lst ++ (take nbA $ repeat 0)
 
 -- problem 12
 problem12 = triangle_numbers !! (length $ takeWhile (<=500) tr_num_divisors) 
@@ -113,14 +113,36 @@ problem13 = do f <- readFile "5000digits.txt"
                let lst = (map read (lines $ f)) :: [Integer]
                print . take 10 . show . sum $ lst
 
--- problem 14
-problem14' []          = []
-problem14' lst@(1:xs)  = lst
-problem14' lst@(x:xs)  = reverse . problem14' $ n:lst
+-- problem 14 - right but to parallelize ...
+problem14' []         = []
+problem14' lst@(1:xs) = lst
+problem14' lst@(x:xs) = problem14' $ n:lst
   where n | even x    = x `div` 2
           | otherwise = x*3 + 1
 
-problem14 = fst $ maximumBy (comparing snd) $ map (\x -> (x,length . problem14' $ [x])) [1..999999]
+problem14 = do
+  let a = solve [1..100000]
+  let b = solve [100001..200000]
+  let c = solve [200001..300000]
+  let d = solve [300001..400000]
+  let e = solve [400001..500000]
+  let f = solve [500001..600000]
+  let g = solve [600001..700000]
+  let h = solve [700001..800000]
+  let i = solve [800001..900000]
+  let j = solve [900001..999999]
+  print $ a
+  print $ b
+  print $ c
+  print $ d
+  print $ e
+  print $ f
+  print $ g
+  print $ h
+  print $ i
+  print $ j
+  print $ fst $ maximumBy (comparing snd) [a,b,c,d,e,f,g,h,i,j]
+  where solve l = maximumBy (comparing snd) $ map (\x -> (x,length . problem14' $ [x])) l
 
 -- problem 16
 problem16 = sum . map (digitToInt) $ show (2^1000)
