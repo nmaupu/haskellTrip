@@ -144,6 +144,14 @@ problem14 = do
   print $ fst $ maximumBy (comparing snd) [a,b,c,d,e,f,g,h,i,j]
   where solve l = maximumBy (comparing snd) $ map (\x -> (x,length . problem14' $ [x])) l
 
+-- problem 15
+-- permutations with repeated elemeents
+-- 20 rights and 20 down
+-- total length = 40
+-- problem15 = length! / 20!20!
+-- problem15 = f 40 `div` (f 20 * f 20)
+problem15 = product [21..40] `div` product [1..20]
+
 -- problem 16
 problem16 = sum . map (digitToInt) $ show (2^1000)
 
@@ -165,14 +173,12 @@ get_in_letters n
   where gethundred n' = one_to_nineteen !! (n' `div` 100) ++ "hundred"
 
 -- problem 18
--- problem18 = readFile "triangle-p18.txt" >>= print . parse
--- parse = map (map read . words) . lines
+problem18 = do f <- readFile "triangle-p18.txt"
+               let l = map (map read) $ (map words $ lines f) :: [[Integer]]
+               print $ l
 
 -- problem 20
-problem20 = sum . map (digitToInt) $ show (factorial' 100)
-  where factorial' n
-          | n == 1    = 1
-          | otherwise = n * factorial' (n-1)
+problem20 = sum . map (digitToInt) $ show (product [1..100])
 
 -- problem 21
 problem21 = sum $ [ a | a <- [1..10000], let b = d a, b > 1, b < 10000, d b == a, a /= b ]
