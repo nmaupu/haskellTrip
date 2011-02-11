@@ -177,6 +177,9 @@ problem18 = do f <- readFile "triangle-p18.txt"
                let l = map (map read) $ (map words $ lines f) :: [[Integer]]
                print $ l
 
+problem19 = nbDaysFirst `div` 7
+  where nbDaysFirst = length $ [ () | y <- [1901..2000], m <- [1..12] ]
+
 -- problem 20
 problem20 = sum . map (digitToInt) $ show (product [1..100])
 
