@@ -3,6 +3,7 @@ import Data.Char
 import Data.Ord (comparing)
 import Data.Maybe
 import Data.Array 
+import Numeric (showIntAtBase)
 
 -- problem 1
 problem1' :: [Int] -> Int -> Int
@@ -196,9 +197,90 @@ problem22 = do file <- readFile "names.txt"
                where computeScore n lst = (*) n . sum . map alphaAscii $ lst
                      alphaAscii x = ord x - ord 'A' + 1
 
+-- problem 24
+problem24 = read . concat . map show $ (sort $ permutations [0..9]) !! 999999 :: Integer
+
 -- problem 25
 problem25 = length $ takeWhile (<limit) fibs
             where limit = 10^999
+
+-- problem 27 - wrong last result = (1011,-60939)
+-- f    = n^2 + an + b
+-- f(0) = 0 + 0 + b = b
+-- f(0) is prime only if b is prime
+-- a must be odd
+--problem27 = max' $ [(nb, a*b) | a <- filter odd [-999..0], b <- takeWhile (<=999) primes, let nb = nbPrimes a b 1]
+--  where nbPrimes a b n | isPrime (n^2 + a*n + b) = nbPrimes a b (n+1)
+--                       | otherwise = n
+--        max' = maximumBy (comparing fst)
+
+
+-- problem 28 - exhaustive search - very slow
+-- data Dir = L | R | U | D deriving (Eq, Show)
+-- nextDir dir | dir == R = D
+--             | dir == D = L
+--             | dir == L = U
+--             | dir == U = R
+-- setInListBy :: Int -> (t -> t) -> [t] -> [t]
+-- setInListBy c f lst = (take c lst) ++ [f $ lst !! c] ++ (drop (c+1) lst)
+-- setInList' c v lst  = setInListBy c (\_ -> v) lst
+-- setInList r c f lst = setInList' r (setInListBy c f $ lst !! r) lst
+-- 
+-- problem28  = sumDiag . spiral m m R 1 . take nb . repeat . take nb . repeat $ 0
+--   where nb = 1001 
+--         m  = nb `div` 2
+-- spiral r c d n l | n > (length l)^2 = l
+--                  | d == R = spiral r (c+1) (next d r (c+1) l) (n+1) $ setInList r c (+n) l
+--                  | d == D = spiral (r+1) c (next d (r+1) c l) (n+1) $ setInList r c (+n) l
+--                  | d == L = spiral r (c-1) (next d r (c-1) l) (n+1) $ setInList r c (+n) l
+--                  | d == U = spiral (r-1) c (next d (r-1) c l) (n+1) $ setInList r c (+n) l
+-- next d r c l | getValDir r c (nextDir d) l == 0 = nextDir d
+--              | otherwise = d
+-- getValDir r c d l | d == R = (l !! r) !! (c+1)
+--                   | d == L = (l !! r) !! (c-1)
+--                   | d == U = (l !! (r-1)) !! c
+--                   | d == D = (l !! (r+1)) !! c
+-- sumDiag lst = (sum' lst) + (sum' (map reverse $ lst)) - 1
+-- sum' []     = 0
+-- sum' (x:xs) = (head x) + sum' (map (drop 1) xs)
+
+problem28 = sum $ take (nb*2-1) $ 1:construct 1 2
+  where nb = 1001
+        construct n cur = (n+cur):(n+cur*2):(n+cur*3):(n+cur*4):(construct (n+cur*4) (cur+2))
+
+-- problem 29
+problem29 = length . nub $ [ a^b | a <- [2..100], b <- [2..100] ]
+
+-- problem 30 - one million is a random choice ...
+-- a curious number is a number as :
+-- n == sum (f applied to its digits)
+isCuriousNumber :: Int -> (Int -> Int -> Int) -> Bool
+isCuriousNumber n f = m n f == n
+  where m n f = foldl f 0 $ map digitToInt . show $ n
+
+problem30 = sum $ [ r | r <- [2..10^6], isCuriousNumber r (\acc x -> acc + x^5) ]
+
+-- problem 34 - one million is a random choice ...
+problem34 = sum $ [ r | r <- [3..10^6], isCuriousNumber r (\acc x -> acc + product [1..x]) ]
+
+-- problem 35
+isPrime 1 = False
+isPrime n = case (primeFactors n) of
+            (_:_:_) -> False
+            _       -> True
+
+problem35 = length . filter circularPrime . takeWhile (<1000000) $ primes
+  where circularPrime p = all isPrime $ circulars p
+        circulars nb = map read $ circulars' (length $ show nb) $ take (length (show nb) * 2 - 1) . cycle $ (show nb) :: [Int]
+        circulars' n s | length s < n = []
+                       | otherwise    = [take n s] ++ circulars' n (drop 1 s)
+
+-- problem 36
+palindrom l = reverse l == l
+problem36 = sum $ filter doublePalindrom [1,3..10^6]
+  where doublePalindrom x = (palindrom . show $ x) &&
+                            (palindrom . showInBinary $ x)
+        showInBinary n = showIntAtBase 2 intToDigit n ""
 
 -- problem 39
 problem39 = fromJust (elemIndex (maximum lst) lst) + 1
@@ -209,6 +291,23 @@ problem39 = fromJust (elemIndex (maximum lst) lst) + 1
 problem40 = product . map irrational_decimal $ exp
   where irrational_decimal n = digitToInt $ (concat . map show $ [1..]) !! (n-1)
         exp                  = take 7 . map (\x -> 10^x) $ [0..]
+
+-- problem 42
+problem42 = do file <- readFile "problem42.txt"
+               let words   = read $ "[" ++ file ++ "]" :: [String]
+               let vals    = map valueOf words
+               let trs     = takeWhile (<=(maximum vals)) $ map t [1..]
+               print $ length . filter (flip elem trs) $ vals
+  where t n = truncate $ (1/2) * (n*(n+1))
+        valueOf str = sum . map alphaAscii $ str
+        alphaAscii c = ord c - ord 'A' + 1
+
+-- problem 45
+pent = scanl (+) 1 [4,7..]
+isHexa x = r == 0
+  where (_,r) = properFraction $ (sqrt (8*fix+1) + 1) / 4
+        fix   = fromInteger x
+problem45 = head $ [ r | r <- pent, r >= 40756, isHexa r ]
 
 -- problem 48
 problem48 :: Integer
