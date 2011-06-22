@@ -335,3 +335,18 @@ problem56 = maximum [ googolSum $ a^b | a <- [1..100], b <- [1..100] ]
 
 -- problem 97
 problem97 = reverse $ take 10 $ reverse $ show $ 28433*2^7830457+1
+
+-- problem 55
+isLychrel :: Integer -> Bool
+isLychrel x = isLychrel_ x 0
+isLychrel_ :: Integer -> Integer -> Bool
+isLychrel_ x n    | n == 50      = True
+                  | n == 0       = nextIter
+                  | pal          = False
+	          | otherwise    = nextIter
+		  where pal      = (palindrom $ show x)
+		        nextIter = isLychrel_ (x + reversex) (n + 1)
+			reversex = read . reverse $ show x :: Integer
+
+problem55 = length $ filter isLychrel [1..10000]
+
