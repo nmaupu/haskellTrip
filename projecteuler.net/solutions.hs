@@ -326,3 +326,12 @@ verifInteger x | compareDigit (2*x) (3*x) && compareDigit (3*x) (4*x) && compare
 
 problem52 = take 1 $ [x | x <- [1..], verifInteger x ]
 
+
+-- problem 56
+googolSum :: Integer -> Int
+googolSum a = sum . map digitToInt $ (show a)
+
+problem56 = maximum [ googolSum $ a^b | a <- [1..100], b <- [1..100] ]
+
+-- problem 97
+problem97 = reverse $ take 10 $ reverse $ show $ 28433*2^7830457+1
