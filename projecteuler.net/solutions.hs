@@ -316,3 +316,13 @@ problem48 = read . concat . filter last_ten . tails . show . sum . take n $ seri
         last_ten x = length x == 10
         series = zipWith (^) [1..] [1..] 
 
+-- problem 52
+compareDigit :: (Num a) => a -> a -> Bool
+compareDigit a b = (sort . show $ a) == (sort . show $ b)
+
+verifInteger :: (Num a) => a -> Bool
+verifInteger x | compareDigit (2*x) (3*x) && compareDigit (3*x) (4*x) && compareDigit (4*x) (5*x) && compareDigit (5*x) (6*x) = True
+               | otherwise = False
+
+problem52 = take 1 $ [x | x <- [1..], verifInteger x ]
+
