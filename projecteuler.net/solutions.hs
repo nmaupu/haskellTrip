@@ -288,6 +288,14 @@ problem36 = sum $ filter doublePalindrom [1,3..10^6]
                             (palindrom . showInBinary $ x)
         showInBinary n = showIntAtBase 2 intToDigit n ""
 
+-- problem 37
+isTruncatableLeft n   | (length . show $ n) == 1 = isPrime n
+                      | otherwise                = isPrime n && (isTruncatableLeft $ n `div` 10)
+isTruncatableRight n  | (length . show $ n) == 1 = isPrime n
+                      | otherwise                = isPrime n && (isTruncatableRight $ (read . tail . show $ n :: Int))
+isTruncatable n = isTruncatableLeft n && isTruncatableRight n
+problem37 = sum $ take 11 $ [ x | x <- [11,13..], isTruncatable x ]
+
 -- problem 39
 problem39 = fromJust (elemIndex (maximum lst) lst) + 1
   where lst            = map getNbSolutions $ [1..1000]
