@@ -210,6 +210,15 @@ problem24 = read . concat . map show $ (sort $ permutations [0..9]) !! 999999 ::
 problem25 = length $ takeWhile (<limit) fibs
             where limit = 10^999
 
+-- problem 27
+-- f(0) = 0 + 0 + b = b
+-- a must be odd
+--fp27 n a b = n^2 + a*n + b
+--problem27 = maximumBy (comparing fst) $ [ (nb,a*b) | a <- [-999, -997..0], b <- takeWhile (<=999) primes, let nb = nbPrimes a b 0 ]
+--            where nbPrimes a b n | (n == 0 && isPrime b) || (isPrime $ fp27 a b n) = nbPrimes a b (n+1)
+--	                         | otherwise = n
+--
+
 -- problem 27 - wrong last result = (1011,-60939)
 -- f    = n^2 + an + b
 -- f(0) = 0 + 0 + b = b
