@@ -197,6 +197,12 @@ problem22 = do file <- readFile "names.txt"
                where computeScore n lst = (*) n . sum . map alphaAscii $ lst
                      alphaAscii x = ord x - ord 'A' + 1
 
+-- problem 23
+allAbundants = [ x | x <- [12..28123], isAbundant x ]
+  where isAbundant x = (sum . divisors $ x) > x
+sumOfTwoAbundants = nub $ [ z | x <- allAbundants, y <- allAbundants, let z = x+y ]
+problem23 = sum $ [1..56246] \\ sumOfTwoAbundants
+
 -- problem 24
 problem24 = read . concat . map show $ (sort $ permutations [0..9]) !! 999999 :: Integer
 
