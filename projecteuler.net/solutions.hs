@@ -363,6 +363,12 @@ verifInteger x | compareDigit (2*x) (3*x) && compareDigit (3*x) (4*x) && compare
 
 problem52 = take 1 $ [x | x <- [1..], verifInteger x ]
 
+-- problem 53
+factorial 0 = 1
+factorial n = n * factorial (n-1)
+nCr n r = (factorial n) `div` (factorial r * factorial (n-r))
+problem53 = length $ [ ncr | a <- [1..100], b <- [1..a], let ncr = nCr a b, ncr > 1000000 ]
+
 
 -- problem 56
 googolSum :: Integer -> Int
