@@ -315,6 +315,14 @@ problem40 = product . map irrational_decimal $ exp
   where irrational_decimal n = digitToInt $ (concat . map show $ [1..]) !! (n-1)
         exp                  = take 7 . map (\x -> 10^x) $ [0..]
 
+-- problem 41
+--problem41 = head $ dropWhile (not . isPandigital) $ filter (is9) primes
+--  where is9 a = ((length . show $ a) == 9) && ((head . show $ a) == '9')
+--isPandigital n = compare2To2 (sort . show $ n) ['1'..]
+--  where compare2To2 [] _ = True
+--        compare2To2 (x:xs) (y:ys) = (x == y) && (compare2To2 xs ys)
+
+
 -- problem 42
 problem42 = do file <- readFile "problem42.txt"
                let words   = read $ "[" ++ file ++ "]" :: [String]
@@ -349,6 +357,12 @@ problem48 = read . concat . filter last_ten . tails . show . sum . take n $ seri
   where n = 1000
         last_ten x = length x == 10
         series = zipWith (^) [1..] [1..] 
+
+-- problem 50 - I dont get it ...
+--problem50' l | isPrime suml = suml
+--             | otherwise = problem50' $ init l
+--  where suml = sum l
+--problem50 = problem50' $ take 546 primes
 
 -- problem 52
 compareDigit :: (Num a) => a -> a -> Bool
