@@ -347,11 +347,13 @@ problem48 = read . concat . filter last_ten . tails . show . sum . take n $ seri
         last_ten x = length x == 10
         series = zipWith (^) [1..] [1..] 
 
--- problem 50 - I dont get it ...
---problem50' l | isPrime suml = suml
---             | otherwise = problem50' $ init l
---  where suml = sum l
---problem50 = problem50' $ take 546 primes
+-- problem 50
+problem50' [] = 0
+problem50' ps | (isPrime sps) && (sps < 1000000) = sps
+              | otherwise = problem50' . tail $ ps
+  where sps = sum ps
+problem50 = problem50' $ take 546 primes
+
 
 -- problem 52
 compareDigit :: (Num a) => a -> a -> Bool
