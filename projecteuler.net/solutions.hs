@@ -332,6 +332,17 @@ isHexa x = r == 0
         fix   = fromInteger x
 problem45 = head $ [ r | r <- pent, r >= 40756, isHexa r ]
 
+-- problem 47
+problem47' n cur | (isOk $ concat' cur n []) = cur
+                 | otherwise = problem47' n (cur+1)
+  where group' l = map (\x -> (x!!0, length x)) $ group l
+        concat' cur n lst | length beautifulList /= n^2 = []
+                          | otherwise = beautifulList
+        beautifulList = concat $ [ v | a <- [0..n-1], let v = group' . primeFactors $ cur+a ]
+        isOk lst = (lst /= []) && (length . nub $ lst) == (length lst)
+problem47 = problem47' 4 646
+
+
 -- problem 48
 problem48 :: Integer
 problem48 = read . concat . filter last_ten . tails . show . sum . take n $ series
