@@ -341,16 +341,14 @@ isHexa x = r == 0
 problem45 = head $ [ r | r <- pent, r >= 40756, isHexa r ]
 
 -- problem 47
---group' l = map (\xs -> (xs!!0, length xs)) (group . sort $ l)
---problem47' cur | (compare' cur 3) && (compare' (cur+1) 2) && (compare' (cur+2) 1) = cur
---               | otherwise = problem47' $ cur+1
---  where compare' cur n | n == 0      = True
---                       | otherwise   = distinctPF (gpf cur) (gpf $ cur+n) && (compare' cur $ n-1)
---        gpf = group' . primeFactors
---
---distinctPF [] _ = True
---distinctPF p1@(x:xs) p2 = (not . elem x $ p2) && (distinctPF xs p2)
---problem47 = problem47' 1
+problem47' n cur | (isOk $ concat' cur n []) = cur
+                 | otherwise = problem47' n (cur+1)
+  where group' l = map (\x -> (x!!0, length x)) $ group l
+        concat' cur n lst | length beautifulList /= n^2 = []
+                          | otherwise = beautifulList
+        beautifulList = concat $ [ v | a <- [0..n-1], let v = group' . primeFactors $ cur+a ]
+        isOk lst = (lst /= []) && (length . nub $ lst) == (length lst)
+problem47 = problem47' 4 646
 
 -- problem 48
 problem48 :: Integer
