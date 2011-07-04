@@ -333,6 +333,24 @@ problem42 = do file <- readFile "problem42.txt"
         valueOf str = sum . map alphaAscii $ str
         alphaAscii c = ord c - ord 'A' + 1
 
+-- problem 43
+-- Pandigital number does not begin by 0
+isPandigital num n = (sort . show $ n) == (take (num+1) $ ['0'..])
+hasInterrestingSubstring n = and . map divisible $ transpose' (transform n) primes
+  where divisible (n,d) | n `mod` d == 0 = True
+                        | otherwise = False
+        transform n = tn (tail . show $ n) []
+        tn n lst | (length n) < 3 = lst
+                 | otherwise = (read $ take 3 n :: Integer):tn (tail n) lst
+        transpose' [] (y:ys) = []
+        transpose' (x:xs) (y:ys) = (toInteger x,toInteger y) : transpose' xs ys
+        result = length . nub $ map divisible $ transpose' (transform n) primes
+problem43 = sum $ filter hasInterrestingSubstring $ filter (isPandigital 9) $ getAllPerms $ permutations [0..9]
+  where getAllPerms [] = []
+        getAllPerms (x:xs) = (read . concat . map show $ x :: Integer) : getAllPerms xs
+
+
+
 -- problem 45
 pent = scanl (+) 1 [4,7..]
 isHexa x = r == 0
