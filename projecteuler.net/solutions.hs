@@ -340,6 +340,18 @@ isHexa x = r == 0
         fix   = fromInteger x
 problem45 = head $ [ r | r <- pent, r >= 40756, isHexa r ]
 
+-- problem 47
+--group' l = map (\xs -> (xs!!0, length xs)) (group . sort $ l)
+--problem47' cur | (compare' cur 3) && (compare' (cur+1) 2) && (compare' (cur+2) 1) = cur
+--               | otherwise = problem47' $ cur+1
+--  where compare' cur n | n == 0      = True
+--                       | otherwise   = distinctPF (gpf cur) (gpf $ cur+n) && (compare' cur $ n-1)
+--        gpf = group' . primeFactors
+--
+--distinctPF [] _ = True
+--distinctPF p1@(x:xs) p2 = (not . elem x $ p2) && (distinctPF xs p2)
+--problem47 = problem47' 1
+
 -- problem 48
 problem48 :: Integer
 problem48 = read . concat . filter last_ten . tails . show . sum . take n $ series
@@ -347,7 +359,7 @@ problem48 = read . concat . filter last_ten . tails . show . sum . take n $ seri
         last_ten x = length x == 10
         series = zipWith (^) [1..] [1..] 
 
--- problem 50
+-- problem 50 - good result but a little bit wrong on some points
 problem50' [] = 0
 problem50' ps | (isPrime sps) && (sps < 1000000) = sps
               | otherwise = problem50' . tail $ ps
