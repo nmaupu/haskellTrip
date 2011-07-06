@@ -174,9 +174,18 @@ get_in_letters n
   where gethundred n' = one_to_nineteen !! (n' `div` 100) ++ "hundred"
 
 -- problem 18
-problem18 = do f <- readFile "triangle-p18.txt"
-               let l = map (map read) $ (map words $ lines f) :: [[Integer]]
-               print $ l
+problem18 = readFileTriangle "triangle-p18.txt"
+readFileTriangle n = do f <- readFile n
+                        let l = map (map read) $ (map words $ lines f) :: [[Integer]]
+                        print $ triangle l
+triangle [] = 0
+triangle [x] = maximum $ x
+triangle (xs:ys:xss) = triangle $ [(flatten xs ys)] ++ xss
+flatten xs ys = max' $ zipWith (+) ([0] ++ double xs ++ [0]) (double ys)
+  where double [] = []
+        double (x:xs) = x:x:(double xs)
+        max' [] = []
+        max' (x:y:xs) = max x y : max' xs
 
 problem19 = nbDaysFirst `div` 7
   where nbDaysFirst = length $ [ () | y <- [1901..2000], m <- [1..12] ]
@@ -400,15 +409,6 @@ nCr n r = (factorial n) `div` (factorial r * factorial (n-r))
 problem53 = length $ [ ncr | a <- [1..100], b <- [1..a], let ncr = nCr a b, ncr > 1000000 ]
 
 
--- problem 56
-googolSum :: Integer -> Int
-googolSum a = sum . map digitToInt $ (show a)
-
-problem56 = maximum [ googolSum $ a^b | a <- [1..100], b <- [1..100] ]
-
--- problem 97
-problem97 = reverse $ take 10 $ reverse $ show $ 28433*2^7830457+1
-
 -- problem 55
 isLychrel :: Integer -> Bool
 isLychrel x = isLychrel_ x 0
@@ -422,4 +422,16 @@ isLychrel_ x n    | n == 50      = True
 			reversex = read . reverse $ show x :: Integer
 
 problem55 = length $ filter isLychrel [1..10000]
+
+-- problem 56
+googolSum :: Integer -> Int
+googolSum a = sum . map digitToInt $ (show a)
+
+problem56 = maximum [ googolSum $ a^b | a <- [1..100], b <- [1..100] ]
+
+-- problem 67
+problem67 = readFileTriangle "triangle-p67.txt"
+
+-- problem 97
+problem97 = reverse $ take 10 $ reverse $ show $ 28433*2^7830457+1
 
